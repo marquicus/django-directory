@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='django-directory',
-    version = '0.0.4',
+    version = '0.0.5',
     description = 'A Django application to list and download files from a directory',
     packages = find_packages(),
     author = 'Evgeny.Fadeev',
@@ -14,7 +14,7 @@ setup(
     url = 'https://github.com/ASKBOT/django-directory',
     include_package_data = True,
     install_requires = [
-        'Django >= 1.8',
+        'Django >= 2.0',
     ],
     classifiers = [
         'Development Status :: 4 - Beta',
@@ -24,8 +24,8 @@ setup(
         'License :: OSI Approved :: GNU General Public License (GPL)',
         'Natural Language :: English',
         'Operating System :: OS Independent',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.8',
         'Topic :: Internet :: WWW/HTTP :: WSGI :: Application',
     ],
     long_description = """Provides a directory listing and links to files,

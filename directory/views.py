@@ -1,14 +1,11 @@
 """Copyright Askbot SpA 2014, Licensed under GPLv3 license."""
 import os
+import mimetypes
 from django.conf import settings
 from django.core.exceptions import PermissionDenied, ImproperlyConfigured
 from django.http import StreamingHttpResponse, Http404
 from django.shortcuts import render
-try:
-    from django.urls import reverse # pylint: disable=unused-import
-except ImportError:
-    from django.core.urlresolvers import reverse
-
+from django.urls import reverse # pylint: disable=unused-import
 from django.utils.module_loading import import_string as import_module
 
 
@@ -21,7 +18,7 @@ def check_access(request):
         return True
 
     if access_mode == 'use-perms':
-        if request.user.is_anonymous():
+        if request.user.is_anonymous:
             return False
         return request.user.has_perm('directory.read')
 
@@ -113,15 +110,30 @@ def _download_file(request, file_path):
     raise PermissionDenied()
 
 
+def _view_file(request, file_path):
+    """Allows authorized user to view a given file"""
+
+    if check_access(request):
+        response = StreamingHttpResponse(content_type=mimetypes.types_map[os.path.splitext(file_path)[1]])
+        file_obj = open(file_path, 'rb')
+        response.streaming_content = read_file_chunkwise(file_obj)
+        return response
+    raise PermissionDenied()
+
+
 def browse(request, path):
     """Directory list view"""
     eventual_path = _eventual_path(os.path.join(settings.DIRECTORY_DIRECTORY, path))
+    view_types = getattr(settings, 'DIRECTORY_VIEW_TYPES', [])
 
     if not _inside_virtual_root(eventual_path):
         # Someone is playing tricks with .. or %2e%2e or so
         raise Http404
 
     if os.path.isfile(eventual_path):
-        return _download_file(request, eventual_path)
+        if os.path.splitext(eventual_path)[1] in view_types:
+            return _view_file(request, eventual_path)
+        else:
+            return _download_file(request, eventual_path)
 
     return _list_directory(request, eventual_path)

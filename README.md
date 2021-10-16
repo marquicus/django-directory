@@ -40,3 +40,6 @@ The function should accept parameter `request` and return a Boolean value - acce
 
 `DIRECTORY_TEMPLATE` - path to the template file for the directory listing. Default value
 is `'directory/list.html'`
+
+`DIRECTORY_VIEW_TYPES` - download is current behavior for all files but if you want to let the browser handle the files by their mimetype you can
+list all the extensions e.g. ['.html', '.txt', '.jpeg', '.png']
